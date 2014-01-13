@@ -35,5 +35,5 @@
         "caption": "Bookmarks: Show Only Project Bookmarks ",
         "command": "sublime_bookmark",
         "args" : { "type" : "show_project_bookmarks" }
-    },
+    }
 ]
