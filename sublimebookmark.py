@@ -99,8 +99,32 @@ def gotoBookmark(bookmark, window):
 	view.sel().add(moveRegion)
 
 
+
+def getProjectPath():
+	import json
+	data = file(os.path.normpath(os.path.join(sublime.packages_path(), '..', 'Settings', 'Session.sublime_session')), 'r').read()
+	data = data.replace('\t', ' ')
+	data = json.loads(data, strict=False)
+	projects = data['workspaces']['recent_workspaces']
+	
+	if os.path.lexists(os.path.join(sublime.packages_path(), '..', 'Settings', 'Auto Save Session.sublime_session')):
+	 	data = file(os.path.normpath(os.path.join(sublime.packages_path(), '..', 'Settings', 'Auto Save Session.sublime_session')), 'r').read()
+	 	data = data.replace('\t', ' ')
+	 	data = json.loads(data, strict=False)
+		if 'workspaces' in data and 'recent_workspaces' in data['workspaces']:
+	 		projects += data['workspaces']['recent_workspaces']
+	
+	print data['workspaces']
+	projects = list(set(projects))
+	return projects
+
 def shouldShowBookmark(bookmark, window, showAllBookmarks):
-	#HACK! currentProjectPath = window.project_file_name()
+	#HACK! 
+	
+	
+	print getProjectPath()
+    #currentProjectPath = window.project_file_name()
+	
 	currentProjectPath = ""
 
 	#free bookmarks can be shown. We don't need a criteria
@@ -159,8 +183,8 @@ class Bookmark:
 		self.uid = int(uid)
 		self.name = str(name)
 		
-		self.regionA = region.a
-		self.regionB = region.b
+		self.regionA = int(region.a)
+		self.regionB = int(region.b)
 
 		self.filePath = str(filePath)
 		self.projectPath = str(projectPath)
@@ -194,7 +218,8 @@ class Bookmark:
 		self.lineStr = newLineStr
 
 	def setRegion(self, region):
-		self.region = region
+		self.regionA = int(region.a)
+		self.regionB = int(region.b)
 
 class SublimeBookmarkCommand(sublime_plugin.WindowCommand):
 	def __init__(self, window):
@@ -376,8 +401,6 @@ class SublimeBookmarkCommand(sublime_plugin.WindowCommand):
 				newRegion = view.line(regions[0])
 				newLineStr = view.substr(newRegion) 
 
-				print newLineStr
-
 				assert newRegion is not None
 				bookmark.setRegion(newRegion)
 				bookmark.setLineStr(newLineStr)
@@ -436,21 +459,13 @@ class SublimeBookmarkCommand(sublime_plugin.WindowCommand):
 	#if the user canceled, go back to the original file
 	def _GotoDoneCallback(self, index):
 		#if we started from a blank window, self.revertBookmark CAN be None
-		if index == -1 and self.revertBookmark is not None:
-			gotoBookmark(self.revertBookmark, self.window)
-			self.revertBookmark = None
-			return
+		if index is not  -1:
+			assert index < len(BOOKMARKS)
+			bookmark = BOOKMARKS[index]
+			assert bookmark is not None
 
-		assert index < len(BOOKMARKS)
-		bookmark = BOOKMARKS[index]
-		assert bookmark is not None
-
-		gotoBookmark(bookmark, self.window)
-		self._updateMarks()
-		
-		self.revertBookmark = None
-		
-
+			gotoBookmark(bookmark, self.window)
+			self._updateMarks()
 
 	#remove the selected bookmark or go back if user canceled
 	def _RemoveDoneCallback(self, index):
