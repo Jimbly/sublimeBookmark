@@ -4,7 +4,11 @@
         "caption": "SublimeBookmarks: Add Bookmark",
         "command": "sublime_bookmark",
         "args" : { "type" : "add" }
-
+    },
+    {
+        "caption": "SublimeBookmarks: Quick Add Bookmark",
+        "command": "sublime_bookmark",
+        "args" : { "type" : "add", "quick": "True" }
     },
 
     //Goto a specific bookmark
@@ -28,6 +32,11 @@
         "caption": "SublimeBookmarks: Toggle Current Line",
         "command": "sublime_bookmark",
         "args" : { "type" : "toggle_line" }
+    },
+    {
+        "caption": "SublimeBookmarks: Quick Toggle Current Line",
+        "command": "sublime_bookmark",
+        "args" : { "type" : "toggle_line", "quick": "True" }
     },
     {
         "caption": "SublimeBookmarks: Show All Bookmarks ",
